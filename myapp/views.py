@@ -29,7 +29,7 @@ def get_info(request):
     })
 
 
-@csrf_exempt
+
 def post_data(request):
     #Обрабатывает POST-запрос на /post_data
     #Добавила валидацию и персонализированные ответы
@@ -74,7 +74,7 @@ def post_data(request):
 
 
 
-@csrf_exempt
+
 def combined(request):
     if request.method == 'GET':
         return JsonResponse({"message": "Это GET запрос на /combined"})
@@ -84,7 +84,7 @@ def combined(request):
 
 
 
-@csrf_exempt
+
 def register(request):  # Регистрация
     if request.method == 'POST':
         try:
@@ -103,7 +103,7 @@ def register(request):  # Регистрация
     # Ответ для других методов
     return JsonResponse({"message": "Метод не поддерживается"}, status=405)
 
-@csrf_exempt #Вход в акк
+#Вход в акк
 def login_user(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -116,7 +116,7 @@ def login_user(request):
             return JsonResponse({"message": "Вход выполнен"})
         return JsonResponse({"message": "Неверные учетные данные"}, status=401)
 
-@csrf_exempt
+
 def user_list(request): #Смотрим и создаем пользователей (Create,read)
     if request.method == 'GET':
         users = list(CustomUser.objects.values())
@@ -127,7 +127,7 @@ def user_list(request): #Смотрим и создаем пользовател
         return JsonResponse({"id": user.id, "message": "Пользователь создан"}, status=201)
     return HttpResponseNotAllowed(['GET', 'POST'])
 
-@csrf_exempt
+
 def user_detail(request, user_id): #Обнова и удаление (Update,delete)
     try:
         user = CustomUser.objects.get(id=user_id)
@@ -148,7 +148,7 @@ def user_detail(request, user_id): #Обнова и удаление (Update,del
     return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
 
 
-@csrf_exempt
+
 def password_reset(request): #Ресет пароля со стороны пользователя, делаем свой эндпоинт
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -169,7 +169,7 @@ def password_reset(request): #Ресет пароля со стороны пол
             return JsonResponse({"message": "Не нашли вас"}, status=404)
     return HttpResponseNotAllowed(['POST'])
 
-@csrf_exempt #Удалялка со стороны пользователя
+ #Удалялка со стороны пользователя
 def delete_account(request):
     if request.method == 'DELETE':
         user = request.user
@@ -178,7 +178,7 @@ def delete_account(request):
     return HttpResponseNotAllowed(['DELETE'])
 
 
-@csrf_exempt #Апдейт со стороны пользователя
+ #Апдейт со стороны пользователя
 def update_profile(request):
     if request.method == 'PUT':
         data = json.loads(request.body)
@@ -189,8 +189,7 @@ def update_profile(request):
         return JsonResponse({"message": "Заапдейтили вас"})
     return HttpResponseNotAllowed(['PUT'])
 
-
-@csrf_exempt #Восстановление через токен и SMTP
+ #Восстановление через токен и SMTP
 def restore_account(request):
     if request.method == 'POST':
         data = json.loads(request.body)
