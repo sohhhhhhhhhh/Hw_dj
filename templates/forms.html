@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django API Forms</title> 
+    {% load static %}
+  <script defer src="{% static 'js/api_forms.js' %}"></script>
+</head>
+<body>
+  <h1>Формы для методов API</h1>
+
+  <!-- Форма для входа -->
+  {% if show_login_form %}
+    <form id="login-form">
+      {% csrf_token %}
+      <h2>Вход</h2>
+      <input type="text" name="username" placeholder="Имя пользователя" required>
+      <input type="password" name="password" placeholder="Пароль" required>
+      <button type="submit">Войти</button>
+    </form>
+  {% endif %}
+
+  <!-- Форма для сброса пароля -->
+  {% if show_password_reset_form %}
+    <form id="password-reset-form">
+      {% csrf_token %}
+      <h2>Сброс пароля</h2>
+      <input type="email" name="email" placeholder="Введите Email" required>
+      <button type="submit">Сбросить пароль</button>
+    </form>
+  {% endif %}
+
+  <!-- Форма для удаления аккаунта -->
+  {% if show_delete_account_form %}
+    <form id="delete-account-form">
+      {% csrf_token %}
+      <h2>Удаление аккаунта</h2>
+      <button type="submit">Удалить аккаунт</button>
+    </form>
+  {% endif %}
+
+  <!-- Форма для обновления профиля -->
+  {% if show_update_profile_form %}
+    <form id="update-profile-form">
+      {% csrf_token %}
+      <h2>Обновление профиля</h2>
+        <input type="text" name="username" placeholder="Новое имя пользователя">
+        <input type="text" name="password" placeholder="Новый пароль">
+        <input type="email" name="email" placeholder="Новый Email">
+      <button type="submit">Обновить профиль</button>
+    </form>
+  {% endif %}
+
+  <!-- Форма для восстановления аккаунта -->
+  {% if show_restore_account_form %}
+    <form id="restore-account-form">
+      {% csrf_token %}
+      <h2>Восстановление аккаунта</h2>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="text" name="token" placeholder="Токен" required>
+      <button type="submit">Восстановить аккаунт</button>
+    </form>
+  {% endif %}
+</body>
+</html>
