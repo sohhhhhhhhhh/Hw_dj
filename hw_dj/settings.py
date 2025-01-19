@@ -53,6 +53,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.csrf',
             ],
         },
     },
@@ -106,7 +107,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -115,12 +123,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'myapp.CustomUser'
 
-# Настройки для отправки почты через SMTP сервер
+# Bottom of the file
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST =  'smtp.sparkpostmail.com' # SMTP сервер
-EMAIL_PORT = 587  # Порт для TLS
-EMAIL_USE_TLS = True  # TLS для безопасности
-EMAIL_HOST_USER = 'sofikamakno' #Юзернейм
-EMAIL_HOST_PASSWORD = '732592fbde2bf7fb21d7c452b510d8701ec55a88'  # Апи ключ
-
-DEFAULT_FROM_EMAIL = 'sofikamakno@gmail.com' #Отсюда пойдут письма
+EMAIL_HOST = ''
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
