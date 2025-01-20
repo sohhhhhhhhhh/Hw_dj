@@ -10,7 +10,7 @@ services:
     plan: starter  # План "starter", по умолчанию бесплатный
     runtime: python  # Используется Python
     buildCommand: pip install -r requirements.txt  # Команда для установки зависимостей
-    startCommand: gunicorn hw_dj.wsgi:application  # Команда для запуска Django приложения через Gunicorn
+    startCommand: gunicorn Hw_dj.wsgi:application  # Команда для запуска Django приложения через Gunicorn
     envVars:  # Переменные окружения для вашего проекта
       - key: DJANGO_SECRET_KEY
         generateValue: true  # Генерирует случайный секретный ключ
@@ -19,7 +19,7 @@ services:
           name: mydatabase  # Название базы данных (можно изменить)
           property: connectionString  # Строка подключения
       - key: DJANGO_SETTINGS_MODULE
-        value: hw_dj.settings  # Указание на файл настроек
+        value: Hw_dj.settings  # Указание на файл настроек
       - key: ALLOWED_HOSTS
         value: "your-app-name.onrender.com"  # Замените на ваш домен
       - key: DEBUG

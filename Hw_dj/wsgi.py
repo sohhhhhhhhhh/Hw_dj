@@ -1,5 +1,5 @@
 """
-WSGI config for hw_dj project.
+WSGI config for Hw_dj project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,9 +8,8 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
 """
 
 import os
-
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hw_dj.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Hw_dj.settings')
 
 application = get_wsgi_application()

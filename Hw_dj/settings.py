@@ -1,5 +1,7 @@
 from pathlib import Path
 import environ
+import os
+
 
 env = environ.Env()
 environ.Env.read_env()
@@ -17,9 +19,9 @@ SECRET_KEY = 'django-insecure-zf7u_=(^s61skw0%e3+ph8vu9r1f8(e(9zpluof#7x@q&m3^d%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+
+
 ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'hw_dj.urls'
+ROOT_URLCONF = 'Hw_dj.urls'
 
 TEMPLATES = [
     {
@@ -63,7 +65,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'hw_dj.wsgi.application'
+WSGI_APPLICATION = 'Hw_dj.wsgi.application'
 
 
 # Database
@@ -111,13 +113,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-
-
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
 
 LOGIN_REDIRECT_URL = '/profile/'
 LOGOUT_REDIRECT_URL = '/register/'
