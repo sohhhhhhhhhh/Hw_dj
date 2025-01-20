@@ -1,0 +1,39 @@
+# render.yaml
+previews:
+  generation: automatic  # Включить автоматическое создание предпросмотров
+
+services:
+  - type: web
+    name: django-app
+    repo: https://github.com/sohhhhhhhhhh/Hw_dj  # Ваш репозиторий
+    branch: main  # Основная ветка, откуда будет производиться развертывание
+    plan: starter  # План "starter", по умолчанию бесплатный
+    runtime: python  # Используется Python
+    buildCommand: pip install -r requirements.txt  # Команда для установки зависимостей
+    startCommand: gunicorn hw_dj.wsgi:application  # Команда для запуска Django приложения через Gunicorn
+    envVars:  # Переменные окружения для вашего проекта
+      - key: DJANGO_SECRET_KEY
+        generateValue: true  # Генерирует случайный секретный ключ
+      - key: DATABASE_URL
+        fromDatabase:  # Подключение к базе данных
+          name: mydatabase  # Название базы данных (можно изменить)
+          property: connectionString  # Строка подключения
+      - key: DJANGO_SETTINGS_MODULE
+        value: hw_dj.settings  # Указание на файл настроек
+      - key: ALLOWED_HOSTS
+        value: "your-app-name.onrender.com"  # Замените на ваш домен
+      - key: DEBUG
+        value: "False"  # Отключение режима отладки
+
+  - type: redis
+    name: redis-instance
+    plan: free  # План для Redis
+    ipAllowList:
+      - source: 0.0.0.0/0  # Разрешение всех IP-адресов
+
+databases:
+  - name: mydatabase  # Название базы данных
+    databaseName: hw_db  # Имя базы данных
+    plan: starter  # Бесплатный план для базы данных
+    ipAllowList:
+      - source: 0.0.0.0/0  # Разрешение всех IP-адресов
