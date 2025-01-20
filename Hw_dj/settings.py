@@ -21,7 +21,7 @@ DEBUG = True
 
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['hw-dj.onrender.com']
 # Application definition
 
 INSTALLED_APPS = [
