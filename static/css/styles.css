@@ -1,0 +1,256 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+body {
+    background: linear-gradient(45deg, #ff96f0, #56fadd);
+    background-size: 400% 400%;
+    animation: gradientAnimation 8s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    padding: 20px;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Form Container */
+.form-container {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 70vh;
+}
+
+
+h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #444;
+    font-family: 'Montserrat Alternates', sans-serif;
+    font-size: clamp(1.2rem, 1.5vw, 2rem);
+    font-weight: normal;
+}
+
+/* Для "Уже есть аккаунт" */
+.account-link {
+    font-size: 1.1rem;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.account-link a {
+    color: #444;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.account-link a:hover {
+    text-decoration: underline;
+}
+
+/* Кнопки "У меня есть аккаунт" и "Не помню пароль" */
+.form-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.form-buttons button {
+    background-color: transparent;
+    color: #444;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: normal;
+    padding: 0;
+    font-size: 1rem;
+}
+
+.form-buttons button:hover {
+    color: #16a0ed;
+    text-decoration: underline;
+    background-color: transparent;
+}
+
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #444;
+    font-family: 'Montserrat Alternates', sans-serif;
+    font-size: clamp(2.3rem, 3vw, 4rem);
+    font-weight: bold;
+}
+
+/* Input Styles */
+input {
+    width: 100%;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    border-color: #A4C3B2;
+    outline: none;
+}
+
+/* Button Styles */
+button {
+    width: 100%;
+    padding: 15px;
+    background-color: #48dfa1;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #00e39a;
+}
+
+/* Alert Message */
+.message {
+    background-color: #FDECEF;
+    color: #B23A48;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Profile Section */
+.profile-wrapper {
+    text-align: center;
+    margin: 20px auto;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.profile-wrapper h2 {
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    margin-bottom: 15px;
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+.profile-wrapper p {
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    margin-bottom: 20px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.btn {
+    display: inline-block;
+    padding: 15px;
+    background-color: #00cd80;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.1em;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #07aa74;
+}
+
+.btn-danger {
+    background-color: #d55959;
+}
+
+.btn-danger:hover {
+    background-color: #ae2e2e;
+}
+
+.btn-logout {
+    background-color: #16a0ed;
+}
+
+.btn-logout:hover {
+    background-color: #0466a8;
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+    .form-container {
+        padding: 30px;
+    }
+    .buttons {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        height: auto;
+    }
+    .form-container {
+        padding: 20px;
+        height: auto;
+    }
+    .profile-wrapper {
+        padding: 20px;
+    }
+    .btn {
+        font-size: 1em;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .form-container {
+        padding: 15px;
+    }
+    .buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+    button {
+        font-size: 1em;
+    }
+}

@@ -8,13 +8,14 @@ urlpatterns = [
     path('post/', views.post_data, name='post_data'),
     path('combined/', views.combined, name='combined'),
     path('register/', views.register, name='register'),
-    path('login1/', views.login_user, name='login'),
+    path('login/', views.login_user, name='login'),
+    path('password_reset/', views.password_reset, name='password_reset'),
+    path('delete_account/', views.delete_account, name='delete_account'),
+    path('update_profile/', views.update_profile, name='update_profile'),
+    path('restore-account/<str:token>/<str:email>/', views.restore_account, name='restore_account'),
 
-    path('users/', views.user_list, name='user_list'),
-    path('users/<int:user_id>/', views.user_detail, name='user_detail'),
+    path('profile/', views.profile, name='profile'),
 
+    path('logout/', views.logout_user, name='logout_user'),
 ]
-
-
-
 

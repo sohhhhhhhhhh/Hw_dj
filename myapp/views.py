@@ -1,208 +1,231 @@
-from django.http import JsonResponse, HttpResponseNotAllowed
+from django.http import HttpResponseNotAllowed
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt #Чтобы атаки не искал, токен мы не пишем энивей
-from django.shortcuts import redirect
-import json
 from .models import CustomUser
+from django.shortcuts import redirect, render
+import json
+from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.contrib.auth import logout
 
 def home(request):
-    return JsonResponse({"message": "Первая лаба"})
+    # Если пользователь авторизован, перенаправляем на профиль
+    if request.user.is_authenticated:
+        return redirect('profile')  # Замените на имя вашего маршрута для профиля
+
+    # Если пользователь не авторизован, перенаправляем на страницу регистрации
+    return redirect('register')  # Замените на имя вашего маршрута для регистрации
+
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')
+
+
+def profile(request):
+
+    if request.session.get('register', False):
+        # Убираем метку с сессии после первого редиректа
+        del request.session['register']
+        return render(request, 'forms.html', {'user_authenticated': True, 'message': 'Регистрация успешна!'})
+
+    # Возвращаем страницу профиля, если никаких дополнительных действий не требуется
+    return render(request, 'forms.html', {'user_authenticated': True})
+
+
 def get_data(request):
-    #Обрабатывает GET-запрос на /data и пишет сообщение
-    return JsonResponse({
-        "status": "success",
-        "message": "Это API",
-    })
+    message = "Это API"
+    return render(request, 'forms.html', {'message': message})
 
 
 def get_info(request):
-    #Обрабатывает GET-запрос на /info и возвращает очень полезное сообщение
-    return JsonResponse({
-        "status": "success",
-        "message": "Информация о нашем API",
-        "data": {
-            "plot": "эщкере",
-        }
-    })
-
+    message = "Информация о нашем API: эщкере"
+    return render(request, 'forms.html', {'message': message})
 
 
 def post_data(request):
-    #Обрабатывает POST-запрос на /post_data
-    #Добавила валидацию и персонализированные ответы
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            # Валидация
             if 'name' not in data or 'age' not in data:
-                return JsonResponse({
-                    "status": "error",
-                    "message": "Ошибка: Укажи 'name' и 'age'."
-                }, status=400)
+                message = "Ошибка: Укажи 'name' и 'age'."
+                return render(request, 'forms.html', {'message': message})
 
-            # Проверяем тип возраста
             if not isinstance(data['age'], int):
-                return JsonResponse({
-                    "status": "error",
-                    "message": "Поле 'age' должно быть числом."
-                }, status=400)
+                message = "Поле 'age' должно быть числом."
+                return render(request, 'forms.html', {'message': message})
 
-            # Норм ответ
-            return JsonResponse({
-                "status": "success",
-                "message": f"Привет, {data['name']}! Тебе {data['age']} лет.",
-                "hints": [
-                    "Чекай /info"
-                ]
-            })
+            message = f"Привет, {data['name']}! Тебе {data['age']} лет."
+            return render(request, 'forms.html', {'message': message})
 
         except json.JSONDecodeError:
-            # Если JSON некорректен
-            return JsonResponse({
-                "status": "error",
-                "message": "Ошибка парсинга JSON: Проверь корректность данных."
-            }, status=400)
+            message = "Ошибка парсинга JSON: Проверь корректность данных."
+            return render(request, 'forms.html', {'message': message})
 
-    # Метод не поддерживается
-    return JsonResponse({
-        "status": "error",
-        "message": "Метод не поддерживается. Используй POST."
-    }, status=405)
-
-
+    message = "Метод не поддерживается. Используй POST."
+    return render(request, 'forms.html', {'message': message})
 
 
 def combined(request):
     if request.method == 'GET':
-        return JsonResponse({"message": "Это GET запрос на /combined"})
+        message = "Это GET запрос на /combined"
+        return render(request, 'forms.html', {'message': message})
     elif request.method == 'POST':
-        return redirect('/data/') #Редиректим если у нас пост запрос
-    return JsonResponse({"error": "Метод не поддерживается"}, status=405)
+        return redirect('/data/')
+    message = "Метод не поддерживается"
+    return render(request, 'forms.html', {'message': message})
 
 
-
-
-def register(request):  # Регистрация
+def register(request):
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
-            username = data.get('username')
-            password = data.get('password')
+            # Получаем данные из формы через request.POST
+            username = request.POST.get('username')
+            email = request.POST.get('email')
+            password = request.POST.get('password')
 
-            if User.objects.filter(username=username).exists():
-                return JsonResponse({"message": "Пользователь уже существует"}, status=400)
+            # Проверяем, существует ли пользователь с таким именем
+            if CustomUser.objects.filter(username=username).exists():
+                message = "Пользователь с таким именем уже существует."
+                return render(request, 'forms.html', {'message': message})
 
-            User.objects.create_user(username=username, password=password)
-            return JsonResponse({"message": "Регистрация успешна"}, status=201)
-        except json.JSONDecodeError:
-            return JsonResponse({"message": "Некорректные данные"}, status=400)
+            # Создаем нового пользователя
+            CustomUser.objects.create_user(username=username, password=password, email=email)
 
-    # Ответ для других методов
-    return JsonResponse({"message": "Метод не поддерживается"}, status=405)
+            # Сохраняем в сессии, что пользователь только что зарегистрировался
+            request.session['register'] = True
 
-#Вход в акк
+            return redirect('profile')
+
+        except Exception as e:
+            # Обрабатываем ошибку и выводим сообщение
+            message = f"Произошла ошибка: {str(e)}"
+            return render(request, 'forms.html', {'message': message})
+
+    # Если метод запроса не POST, отображаем форму регистрации
+    return render(request, 'forms.html', {'show_register_form': True})
+
+
 def login_user(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        username = data.get('username')
-        password = data.get('password')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return JsonResponse({"message": "Вход выполнен"})
-        return JsonResponse({"message": "Неверные учетные данные"}, status=401)
+        try:
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('profile')
 
+            message = "Неверные учетные данные"
+            return render(request, 'forms.html', {'message': message})
 
-def user_list(request): #Смотрим и создаем пользователей (Create,read)
-    if request.method == 'GET':
-        users = list(CustomUser.objects.values())
-        return JsonResponse(users, safe=False)
-    elif request.method == 'POST':
-        data = json.loads(request.body)
-        user = CustomUser.objects.create(**data)
-        return JsonResponse({"id": user.id, "message": "Пользователь создан"}, status=201)
-    return HttpResponseNotAllowed(['GET', 'POST'])
+        except Exception as e:
+            message = f"Произошла ошибка при входе: {str(e)}"
+            return render(request, 'forms.html', {'message': message})
+
+    return render(request, 'forms.html', {'show_login_form': True})
 
 
-def user_detail(request, user_id): #Обнова и удаление (Update,delete)
-    try:
-        user = CustomUser.objects.get(id=user_id)
-    except CustomUser.DoesNotExist:
-        return JsonResponse({"message": "Пользователь не найден"}, status=404)
-
-    if request.method == 'GET':
-        return JsonResponse({"id": user.id, "username": user.username})
-    elif request.method == 'PUT':
-        data = json.loads(request.body)
-        for field, value in data.items():
-            setattr(user, field, value)
-        user.save()
-        return JsonResponse({"message": "Пользователь обновлен"})
-    elif request.method == 'DELETE':
-        user.delete()
-        return JsonResponse({"message": "Пользователь удален"})
-    return HttpResponseNotAllowed(['GET', 'PUT', 'DELETE'])
-
-
-
-def password_reset(request): #Ресет пароля со стороны пользователя, делаем свой эндпоинт
+def password_reset(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        email = data.get('email')
+        email = request.POST.get('email')
         try:
             user = CustomUser.objects.get(email=email)
             token = default_token_generator.make_token(user)
-            reset_url = f""
+            reset_url = f"http://127.0.0.1:8000/restore-account/{token}/{user.email}/"
             send_mail(
-                'Пароль обновлен',
-                f'Перейдите по ссылке чтобы обновить пароль: {reset_url}',
-                'noreply@yourdomain.com',
-                [email],
+                'Сброс пароля',
+                f'Перейдите по следующей ссылке, чтобы сбросить пароль: {reset_url}',
+                '',
+                [user.email],
                 fail_silently=False,
             )
-            return JsonResponse({"message": "Ссылка для сброса пароля у вас на почте"})
-        except User.DoesNotExist:
-            return JsonResponse({"message": "Не нашли вас"}, status=404)
-    return HttpResponseNotAllowed(['POST'])
+            message = "Инструкция по сбросу пароля отправлена на почту"
+            return render(request, 'forms.html', {'message': message})
 
- #Удалялка со стороны пользователя
+        except CustomUser.DoesNotExist:
+            # Не раскрываем, существует ли пользователь с таким email
+            message = "Инструкция по сбросу пароля отправлена на почту, если такой аккаунт существует"
+            return render(request, 'forms.html', {'message': message})
+
+        except Exception as e:
+            print(f"Ошибка при отправке письма: {e}")
+            message = "Ошибка при отправке письма"
+            return render(request, 'forms.html', {'message': message})
+
+    return render(request, 'forms.html', {'show_password_reset_form': True})
+
+
 def delete_account(request):
-    if request.method == 'DELETE':
-        user = request.user
-        user.delete()
-        return JsonResponse({"message": "Аккаунт усешно удален"})
-    return HttpResponseNotAllowed(['DELETE'])
+    # Проверяем, что пользователь аутентифицирован
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            try:
+                # Удаляем пользователя
+                user = request.user
+                user.delete()
+                return redirect('register')  # Перенаправление на страницу регистрации после удаления
+
+            except Exception as e:
+                # Обрабатываем ошибку, если она возникла
+                message = f"Произошла ошибка: {str(e)}"
+                return render(request, 'forms.html', {'message': message})
+
+        # Отображаем форму удаления аккаунта (если запрос GET)
+        return render(request, 'forms.html', {'show_delete_account_form': True})
+
+    # Если пользователь не авторизован, перенаправляем на страницу регистрации
+    return redirect('register')
 
 
- #Апдейт со стороны пользователя
 def update_profile(request):
-    if request.method == 'PUT':
-        data = json.loads(request.body)
-        user = request.user
-        user.username = data.get('username', user.username)
-        user.email = data.get('email', user.email)
-        user.save()
-        return JsonResponse({"message": "Заапдейтили вас"})
-    return HttpResponseNotAllowed(['PUT'])
-
- #Восстановление через токен и SMTP
-def restore_account(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        email = data.get('email')
-        token = data.get('token')
-        try:
-            user = CustomUser.objects.get(email=email)
-            if default_token_generator.check_token(user, token):
-                user.is_active = True
-                user.save()
-                return JsonResponse({"message": "Восстановили вас"})
-            else:
-                return JsonResponse({"message": "Токен не тот, ищите новый"}, status=400)
-        except User.DoesNotExist:
-            return JsonResponse({"message": "Пользователя нет вы че"}, status=404)
-    return HttpResponseNotAllowed(['POST'])
+        if request.user.is_authenticated:
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            email = request.POST.get('email')
+            user = request.user
+            if username:
+                user.username = username
+            if password:
+                user.set_password(password)
+            if email:
+                user.email = email
+            user.save()
+            return redirect('profile')
+
+        message = "Необходимо авторизоваться"
+        return render(request, 'forms.html', {'message': message})
+
+    return render(request, 'forms.html', {'show_update_profile_form': True})
+
+
+
+def restore_account(request, token, email):
+    try:
+        user = CustomUser.objects.get(email=email)
+        if default_token_generator.check_token(user, token):
+            if request.method == 'POST':
+                form = SetPasswordForm(user, request.POST)
+                if form.is_valid():
+                    form.save()
+                    return redirect('profile')
+                else:
+                    message = "Некорректный пароль"
+                    return render(request, 'forms.html', {'message': message})
+
+            form = SetPasswordForm(user)
+            return render(request, 'forms.html', {'form': form, 'show_restore_account_form': True})
+
+        else:
+            message = "Неверный или истекший токен"
+            return render(request, 'forms.html', {'message': message})
+
+    except CustomUser.DoesNotExist:
+        message = "Пользователь с таким email не найден"
+        return render(request, 'forms.html', {'message': message})
+    except Exception as e:
+        message = f"Ошибка: {str(e)}"
+        return render(request, 'forms.html', {'message': message})

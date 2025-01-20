@@ -3,64 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django API Forms</title> 
+    <title>Profile</title>
     {% load static %}
-  <script defer src="{% static 'js/api_forms.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-  <h1>Формы для методов API</h1>
 
-  <!-- Форма для входа -->
-  {% if show_login_form %}
-    <form id="login-form">
-      {% csrf_token %}
-      <h2>Вход</h2>
-      <input type="text" name="username" placeholder="Имя пользователя" required>
-      <input type="password" name="password" placeholder="Пароль" required>
-      <button type="submit">Войти</button>
-    </form>
-  {% endif %}
+    <!-- Форма для регистрации-->
+    {% if show_register_form %}
+        <h1>Регистрация профиля</h1>
+        <form id="register-form" method="POST">
+            {% csrf_token %}
+            <h2>Введите свои данные</h2>
+            <input type="text" name="username" placeholder="Имя пользователя" required>
+            <input type="email" name="email" placeholder="Почта" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <button type="submit">Зарегестрироваться</button>
+        </form>
 
-  <!-- Форма для сброса пароля -->
-  {% if show_password_reset_form %}
-    <form id="password-reset-form">
-      {% csrf_token %}
-      <h2>Сброс пароля</h2>
-      <input type="email" name="email" placeholder="Введите Email" required>
-      <button type="submit">Сбросить пароль</button>
-    </form>
-  {% endif %}
+        <div class="account-link">
+            <p>Уже есть аккаунт?</p>
+            <div class="form-buttons">
+                <form method="get" action="{% url 'login' %}">
+                    <button type="submit">У меня есть аккаунт</button>
+                </form>
+                <form method="get" action="{% url 'password_reset' %}">
+                    <button type="submit">Не помню пароль</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
 
-  <!-- Форма для удаления аккаунта -->
-  {% if show_delete_account_form %}
-    <form id="delete-account-form">
-      {% csrf_token %}
-      <h2>Удаление аккаунта</h2>
-      <button type="submit">Удалить аккаунт</button>
-    </form>
-  {% endif %}
+    <!-- Форма для входа -->
+    {% if show_login_form %}
+        <h1>Вход в аккаунт</h1>
+        <form id="login-form" method="POST">
+            {% csrf_token %}
+            <h2>Введите свои данные</h2>
+            <input type="text" name="username" placeholder="Имя пользователя" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <button type="submit">Войти</button>
+        </form>
+    {% endif %}
 
-  <!-- Форма для обновления профиля -->
-  {% if show_update_profile_form %}
-    <form id="update-profile-form">
-      {% csrf_token %}
-      <h2>Обновление профиля</h2>
-        <input type="text" name="username" placeholder="Новое имя пользователя">
-        <input type="text" name="password" placeholder="Новый пароль">
-        <input type="email" name="email" placeholder="Новый Email">
-      <button type="submit">Обновить профиль</button>
-    </form>
-  {% endif %}
+    <!-- Форма для сброса пароля -->
+    {% if show_password_reset_form %}
+        <h1>Сброс пароля</h1>
+        <form id="password-reset-form" method="POST">
+            {% csrf_token %}
+            <h2>Введите свою почту</h2>
+            <input type="email" name="email" placeholder="Email" required>
+            <button type="submit">Сбросить пароль</button>
+        </form>
+    {% endif %}
 
-  <!-- Форма для восстановления аккаунта -->
-  {% if show_restore_account_form %}
-    <form id="restore-account-form">
-      {% csrf_token %}
-      <h2>Восстановление аккаунта</h2>
-      <input type="email" name="email" placeholder="Email" required>
-      <input type="text" name="token" placeholder="Токен" required>
-      <button type="submit">Восстановить аккаунт</button>
-    </form>
-  {% endif %}
+    <!-- Форма для удаления аккаунта -->
+    {% if show_delete_account_form %}
+        <h1>Удаление профиля</h1>
+        <form id="delete-account-form" method="POST">
+            {% csrf_token %}
+            <h2>Нажмите на кнопку, и ваш аккаунт исчезнет</h2>
+            <button type="submit">Удалить аккаунт</button>
+        </form>
+    {% endif %}
+
+    <!-- Форма для обновления профиля -->
+    {% if show_update_profile_form %}
+        <h1>Изменить данные профиля</h1>
+        <form id="update-profile-form" method="POST">
+            {% csrf_token %}
+            <h2>Введите все заново</h2>
+            <input type="text" name="username" placeholder="Новое имя пользователя">
+            <input type="password" name="password" placeholder="Новый пароль">
+            <input type="email" name="email" placeholder="Новый Email">
+            <button type="submit">Обновить профиль</button>
+        </form>
+    {% endif %}
+
+    <!-- Форма для восстановления аккаунта -->
+    {% if show_restore_account_form %}
+        <h1>Восстановление аккаунта</h1>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }} <!-- Рендерим поля формы для ввода пароля -->
+            <button type="submit">Подтвердить</button>
+        </form>
+    {% endif %}
+
+    {% if message %}
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+        <div class="alert {% if message_type %}{{ message_type }}{% else %}info{% endif %} show">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    <!-- Скрипт для закрытия модального окна по таймеру -->
+    <script>
+        setTimeout(function() {
+            let alertDiv = document.querySelector(".alert");
+            if (alertDiv) {
+                alertDiv.classList.remove("show");
+            }
+        }, 5000);
+    </script>
+
+    {% if user_authenticated %}
+        <div class="profile-wrapper">
+            <h2>Добро пожаловать, {{ user.username }}!</h2>
+            <p>Email: {{ user.email }}</p>
+            <div class="buttons">
+                <a href="{% url 'update_profile' %}" class="btn">Изменить профиль</a>
+                <a href="{% url 'delete_account' %}" class="btn btn-danger">Удалить аккаунт</a>
+                <a href="{% url 'password_reset' %}" class="btn">Сменить пароль</a>
+                <a href="{% url 'logout_user' %}" class="btn btn-logout">Выйти</a>
+            </div>
+        </div>
+    {% endif %}
+
 </body>
 </html>
