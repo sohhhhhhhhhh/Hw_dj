@@ -19,9 +19,18 @@ SECRET_KEY = 'django-insecure-zf7u_=(^s61skw0%e3+ph8vu9r1f8(e(9zpluof#7x@q&m3^d%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+STATIC_URL = '/static/'
+
+# Папка для хранения статических файлов на сервере (если проект в продакшн)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Папка для разработки статических файлов
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 
-ALLOWED_HOSTS = ['hw-dj.onrender.com']
+ALLOWED_HOSTS = ['hw-dj.onrender.com',  '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
@@ -112,9 +121,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 LOGIN_REDIRECT_URL = '/profile/'
