@@ -73,7 +73,10 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+if 'render' in os.environ.get('HOST', '').lower():
+    WSGI_APPLICATION = 'src.config.wsgi.application'
+else:
+    WSGI_APPLICATION = 'config.wsgi.application'
 
 
 
