@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'src.myapp',
+    'myapp',
 ]
 
 MIDDLEWARE = [
@@ -73,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-if 'render' in os.environ.get('HOST', '').lower():
+if 'RENDER' in os.environ:
     WSGI_APPLICATION = 'src.config.wsgi.application'
 else:
     WSGI_APPLICATION = 'config.wsgi.application'
