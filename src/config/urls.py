@@ -1,9 +1,11 @@
 from django.urls import path
-from . import views
+from django.contrib import admin
+from api import views
 from django.conf.urls.static import static
 from django.conf import settings
 urlpatterns = [
     path('', views.home, name='home'),
+    path('admin/', admin.site.urls),
     path('data/', views.get_data, name='get_data'),
     path('info/', views.get_info, name='get_info'),
     path('post/', views.post_data, name='post_data'),

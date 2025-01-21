@@ -1,7 +1,7 @@
-from django.http import HttpResponseNotAllowed
 from django.contrib.auth import authenticate, login
-from .models import CustomUser
+from myapp.models import CustomUser
 from django.shortcuts import redirect, render
+from django.contrib.auth import update_session_auth_hash
 import json
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
@@ -24,14 +24,20 @@ def logout_user(request):
 
 
 def profile(request):
+    if request.user.is_authenticated:
+        # Отправляем обновленные данные пользователя в контекст
+        return render(request, 'forms.html', {
+            'user_authenticated': True,
+            'username': request.user.username,
+            'email': request.user.email
+        })
 
     if request.session.get('register', False):
-        # Убираем метку с сессии после первого редиректа
         del request.session['register']
         return render(request, 'forms.html', {'user_authenticated': True, 'message': 'Регистрация успешна!'})
 
-    # Возвращаем страницу профиля, если никаких дополнительных действий не требуется
-    return render(request, 'forms.html', {'user_authenticated': True})
+    return render(request, 'forms.html', {'user_authenticated': False})
+
 
 
 def get_data(request):
@@ -80,7 +86,7 @@ def combined(request):
 def register(request):
     if request.method == 'POST':
         try:
-            # Получаем данные из формы через request.POST
+            # Получаем данные из формы
             username = request.POST.get('username')
             email = request.POST.get('email')
             password = request.POST.get('password')
@@ -91,7 +97,10 @@ def register(request):
                 return render(request, 'forms.html', {'message': message})
 
             # Создаем нового пользователя
-            CustomUser.objects.create_user(username=username, password=password, email=email)
+            user = CustomUser.objects.create_user(username=username, password=password, email=email)
+
+            # Авторизуем пользователя
+            login(request, user)
 
             # Сохраняем в сессии, что пользователь только что зарегистрировался
             request.session['register'] = True
@@ -103,7 +112,6 @@ def register(request):
             message = f"Произошла ошибка: {str(e)}"
             return render(request, 'forms.html', {'message': message})
 
-    # Если метод запроса не POST, отображаем форму регистрации
     return render(request, 'forms.html', {'show_register_form': True})
 
 
@@ -191,9 +199,12 @@ def update_profile(request):
                 user.username = username
             if password:
                 user.set_password(password)
+                update_session_auth_hash(request, user)  # Обновляем сессию
             if email:
                 user.email = email
             user.save()
+
+            # После сохранения данных, перенаправляем на страницу профиля
             return redirect('profile')
 
         message = "Необходимо авторизоваться"
